@@ -17,9 +17,12 @@ android {
 
     compileSdkVersion project.properties.compileSdkVersion.toInteger()
     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
-    // The Android SDK here lives under "Program Files (x86)" (read-only), so the NDK was
-    // installed to a separate writable SDK root. Point at it explicitly.
-    ndkPath = System.getenv("TERMUX_NDK_PATH") ?: "D:/android-sdk/ndk/29.0.14206865"
+    // Only pin the NDK location when one outside the SDK genuinely needs pointing at.
+    // Leaving android.ndkPath unset lets AGP resolve the NDK from the SDK via
+    // ndkVersion, which is what CI and every other machine has - a hardcoded local
+    // path here breaks the build everywhere else (it broke GitHub Actions).
+    def ndkPathOverride = System.getenv("TERMUX_NDK_PATH")
+    if (ndkPathOverride) { ndkPath = ndkPathOverride }
     def appVersionName = System.getenv("TERMUX_APP_VERSION_NAME") ?: ""
     def apkVersionTag = System.getenv("TERMUX_APK_VERSION_TAG") ?: ""
     def splitAPKsForDebugBuilds = System.getenv("TERMUX_SPLIT_APKS_FOR_DEBUG_BUILDS") ?: "1"
