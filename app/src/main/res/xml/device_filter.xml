@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Realtek 8812AU / 8814AU / 8821AU / 8822BU Wi-Fi adapters -->
+    <usb-device vendor-id="3034" product-id="34834" /> <!-- 0bda:8812 Alfa AWUS036ACH -->
+    <usb-device vendor-id="3034" product-id="34836" /> <!-- 0bda:8814 Alfa AWUS1900 -->
+    <usb-device vendor-id="3034" product-id="34833" /> <!-- 0bda:8811 -->
+    <usb-device vendor-id="3034" product-id="34849" /> <!-- 0bda:8821 -->
+    <usb-device vendor-id="3034" product-id="34850" /> <!-- 0bda:8822 -->
+    <!-- Mediatek MT7612U / MT7610U adapters -->
+    <usb-device vendor-id="5263" product-id="36865" /> <!-- Alfa AWUS036ACM -->
+    <usb-device vendor-id="5263" product-id="36866" /> <!-- Alfa AWUS036ACHM -->
+    <usb-device vendor-id="5263" product-id="36867" /> <!-- Alfa AWUS036AX -->
+    <!-- TP-Link Wi-Fi adapters -->
+    <usb-device vendor-id="3314" product-id="37637" /> <!-- Archer T4U -->
+    <usb-device vendor-id="3314" product-id="37640" /> <!-- Archer T9UH -->
+    <!-- Atheros AR9271 adapters -->
+    <usb-device vendor-id="3314" product-id="37633" /> <!-- TL-WN722N v1 -->
+    <usb-device vendor-id="3314" product-id="37649" /> <!-- TL-WN722N v2/v3 -->
+</resources>

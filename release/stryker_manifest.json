@@ -1,0 +1,33 @@
+{
+  "manifest_version": 1,
+  "rootless": {
+    "qemu": {
+      "url": "https://github.com/VV-B0Y/Termux-Black/releases/download/rootless-main/qemu-system-aarch64",
+      "sha256": "2a87f531371b3f8d45141d48632e0dbe2c3d968fbcb385ba105d671479fb8c99",
+      "size": 43800304
+    },
+    "kernel": {
+      "url": "https://github.com/VV-B0Y/Termux-Black/releases/download/rootless-main/Image",
+      "sha256": "9c37ace54ef7e1919411fd912e9f34d6982ddd7f4c8ef3c8aee56f4c4d70db67",
+      "size": 37660608
+    },
+    "initrd": {
+      "url": "https://github.com/VV-B0Y/Termux-Black/releases/download/rootless-main/initrd.img",
+      "sha256": "77815926108121f6ab5b23954933f97968f614fe894296a549e5770000fafca9",
+      "size": 36485420
+    },
+    "libslirp": {
+      "url": "https://github.com/VV-B0Y/Termux-Black/releases/download/rootless-main/libslirp.so",
+      "sha256": "226372426fda32c9fccd8e831d0901a86bfff3c3e6f7a60336d6dde149f756c4",
+      "size": 1145496
+    },
+    "rootfs": {
+      "url": "https://github.com/VV-B0Y/Termux-Black/releases/download/rootless-main/rootfs.imgz",
+      "sha256": "5e82f6436b73ecf26b68b4917ecb731cc41514fe08919d05978194ec6e29ae1d",
+      "size": 1051932051,
+      "format": "qcow2",
+      "compression": "gzip",
+      "note": "Debian trixie arm64 guest, driver-tuned. Gzip-compressed QCOW2 (not raw): launch with -drive ...,format=qcow2. The RX-aggregation fix (rtw_usb_rxagg_mode=0 etc) plus the 8812au blacklist are baked into /etc/modprobe.d inside this image, and the 88XXau module is prebuilt for kernel 6.12.107+deb13-arm64, so a fresh install captures data frames with no guest configuration."
+    }
+  }
+}
