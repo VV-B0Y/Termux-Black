@@ -277,4 +277,14 @@
     <string name="rootless_console_connected">[connected \u2014 this is a root shell inside the VM]</string>
     <string name="rootless_console_error">[console error]</string>
 
+    <!-- on-screen key row for the guest console -->
+    <string name="rootless_key_esc">Esc</string>
+    <string name="rootless_key_ctrl">Ctrl</string>
+    <string name="rootless_key_ctrlc">^C</string>
+    <string name="rootless_key_tab">Tab</string>
+    <string name="rootless_key_up">\u2191</string>
+    <string name="rootless_key_down">\u2193</string>
+    <string name="rootless_key_left">\u2190</string>
+    <string name="rootless_key_right">\u2192</string>
+
 </resources>

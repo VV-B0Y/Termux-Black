@@ -56,7 +56,7 @@ Nothing else is required — no PC, no adb, no Termux scripting.
 | `app/src/main/java/com/termux/app/rootless/` | the VM framework: install, launch, console |
 | `app/src/main/java/com/termux/app/usb/` | USB passthrough: QMP client, attach receiver, shim |
 | `app/src/main/cpp/` | native shim + JNI for the USB/terminal paths |
-| `docs/` | architecture, hands-free install, and the monitor-mode issue write-up |
+| `docs/` | architecture, hands-free install, the monitor-mode issue write-up, and [lessons learned](docs/LESSONS-LEARNED.md) |
 | `drivers/` | the working RTL8812AU driver (`88XXau`), its `.ko`, and the module options |
 | `release/` | the asset manifest + checksums the APK consumes |
 | `scripts/` | guest-side bring-up / repair script (dev + troubleshooting path) |

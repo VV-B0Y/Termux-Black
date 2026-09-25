@@ -118,7 +118,7 @@ EAPOL M4 messages (total)................: 6
 and it wrote a hashcat-ready hash (type `02` = EAPOL 4-way, PSK-based ⇒ dictionary-crackable):
 
 ```
-WPA*02*<PMKID/MIC>*18a5e3a042b0*<client MAC>*<ESSID hex>*…
+WPA*02*<PMKID/MIC>*<AP BSSID>*<client MAC>*<ESSID hex>*…
 ```
 
 A `WPA*01*` line would be a PMKID instead.
