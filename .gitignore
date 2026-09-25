@@ -37,3 +37,16 @@ local.properties
 .swp
 ehthumbs.db
 Thumbs.db
+
+# Wireless capture artifacts. These carry real BSSIDs, SSIDs, client MACs and
+# handshake hashes for networks the user was testing against, so they belong on
+# the machine, never in this repo. (Findings from captures are documented in
+# docs/ with identifiers replaced by placeholders.)
+*.cap
+*.pcap
+*.pcapng
+*.hc22000
+*.22000
+*.ivs
+*.kismet*
+captures/
