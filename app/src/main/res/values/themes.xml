@@ -55,6 +55,10 @@
 
         <!-- Black/white/red prompts. -->
         <item name="android:alertDialogTheme">@style/TermuxAlertDialogStyle</item>
+
+        <!-- Same rule for long-press menus: black panel, red choices. -->
+        <item name="android:popupMenuStyle">@style/TermuxPopupMenuStyle</item>
+        <item name="android:itemTextAppearance">@style/TermuxPopupItemText</item>
     </style>
 
 </resources>

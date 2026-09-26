@@ -2,14 +2,39 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="TermuxAlertDialogStyle" parent="@android:style/Theme.Material.Dialog.Alert">
-        <!-- Black panel, white text, red for the parts that need attention: this is the look the
-             app's prompts use everywhere, including the target and one-adapter dialogs. -->
+        <!-- Black panel, white title/body, red for anything the user can choose: this is the look
+             the app's prompts use everywhere, including the target and one-adapter dialogs. -->
         <item name="android:colorAccent">#FFFF3B30</item>
         <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">#FFB3B3B3</item>
-        <item name="android:textColorAlertDialogListItem">@android:color/white</item>
+        <item name="android:panelBackground">@android:color/black</item>
+        <item name="android:textColorAlertDialogListItem">#FFFF3B30</item>
         <item name="android:alertDialogTheme">@style/TermuxAlertDialogStyle</item>
+
+        <!-- Dialog buttons must be red. Without these the button bar inherits the app theme's
+             button style (black text, meant for the white drawer), which renders the buttons
+             invisible on the black panel. Set all four so platform and support dialogs agree. -->
+        <item name="android:buttonBarPositiveButtonStyle">@style/TermuxDialogButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/TermuxDialogButtonStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/TermuxDialogButtonStyle</item>
+        <item name="android:buttonBarButtonStyle">@style/TermuxDialogButtonStyle</item>
+    </style>
+
+    <style name="TermuxDialogButtonStyle" parent="@android:style/Widget.Material.Button.Borderless">
+        <item name="android:textColor">#FFFF3B30</item>
+        <item name="android:textColorPrimary">#FFFF3B30</item>
+        <item name="android:colorAccent">#FFFF3B30</item>
+    </style>
+
+    <!-- Long-press menus and dropdowns: same rule as the dialogs, black and red. -->
+    <style name="TermuxPopupMenuStyle" parent="@android:style/Widget.Material.PopupMenu">
+        <item name="android:popupBackground">@android:color/black</item>
+    </style>
+
+    <style name="TermuxPopupItemText" parent="@android:style/TextAppearance.Material.Menu">
+        <item name="android:textColor">#FFFF3B30</item>
     </style>
 
     <style name="TermuxActivity.Drawer.ButtonBarStyle.Light" parent="@style/Widget.MaterialComponents.Button.TextButton">
