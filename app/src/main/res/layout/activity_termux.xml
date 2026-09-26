@@ -4,8 +4,45 @@
     android:id="@+id/activity_termux_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:orientation="vertical">
+
+    <!--
+      Note: no android:fitsSystemWindows here on purpose. It padded the whole app down by the
+      status bar height, which showed up as an empty bar above the terminal. Insets are applied
+      by TermuxActivity instead: zero at the top (the terminal and the drawer draw behind the
+      status bar and into the cutout), and the navigation-bar/cutout insets at the sides and
+      bottom so nothing ends up under the gesture bar.
+    -->
+    <!--
+      Static band across the top of every session. It covers the camera cutout exactly (its height is
+      set at runtime to the top inset) and is where live session data belongs: CPU and RAM use, VM
+      state, capture alerts and indicators. Nothing scrolls here and the terminal starts below it, so
+      the first line of a session is never hidden under the camera again.
+    -->
+    <LinearLayout
+        android:id="@+id/session_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#FF000000"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/session_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:fontFamily="monospace"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="#FF9E9E9E"
+            android:textSize="11sp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/activity_termux_root_relative_layout"
@@ -38,69 +75,443 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:choiceMode="singleChoice"
+                android:background="?attr/termuxActivityDrawerBackground"
+                android:descendantFocusability="blocksDescendants"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
-                android:descendantFocusability="blocksDescendants"
-                android:orientation="vertical"
-                android:background="?attr/termuxActivityDrawerBackground">
+                android:orientation="vertical">
+
+                <!--
+                  The drawer content stacks from the top instead of stretching: with the sessions
+                  list sized to its items, collapsing the section (or simply having one or two
+                  sessions) leaves the VM section directly below the sessions header rather than
+                  pinned to the bottom of the drawer. The ScrollView takes over when the content
+                  grows taller than the drawer.
+                -->
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
+
+                <!-- Sessions section: the header collapses on tap, with the new-session "+" beside it. -->
+                <LinearLayout
+                    android:id="@+id/sessions_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/drawer_section_sessions"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+
                     <ImageButton
-                        android:id="@+id/settings_button"
+                        android:id="@+id/new_session_button"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_settings"
-                        android:background="@null"
-                        android:contentDescription="@string/action_open_settings"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/action_new_session"
+                        android:src="@drawable/ic_add"
                         app:tint="?attr/termuxActivityDrawerImageTint" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/rootless_vm_button"
-                        style="?android:attr/buttonBarButtonStyle"
+                    <TextView
+                        android:id="@+id/sessions_section_chevron"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:minWidth="0dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="@string/rootless_vm_button"
-                        android:textSize="12sp" />
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="\u25be"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <ListView
                     android:id="@+id/terminal_sessions_list"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="top"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
                     android:choiceMode="singleChoice"
                     android:longClickable="true" />
 
+                <!-- VM section: header (tap to collapse) plus every VM control. -->
                 <LinearLayout
-                    style="?android:attr/buttonBarStyle"
+                    android:id="@+id/vm_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/drawer_section_vm"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/rootless_status_short"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/vm_section_chevron"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="\u25be"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            <TextView
+                android:id="@+id/rootless_activity_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="6dp"
+                android:textSize="11sp"
+                android:alpha="0.8"
+                android:text="@string/rootless_activity_idle" />
+
+                <ScrollView
+                    android:id="@+id/vm_panel_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:maxHeight="360dp"
+                    android:visibility="gone"
+                    tools:ignore="UselessParent">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/toggle_keyboard_button"
-                        style="?android:attr/buttonBarButtonStyle"
+                    <LinearLayout
+                        android:id="@+id/vm_panel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/action_toggle_soft_keyboard" />
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="16dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/new_session_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/action_new_session" />
+                        <TextView
+                            android:id="@+id/rootless_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="12sp"
+                            tools:text="VM running (pid 1234)" />
+
+                        <TextView
+                            android:id="@+id/rootless_log"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:maxLines="4"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/drawer_vm_controls"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_start"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_start_vm"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_stop"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_stop_vm"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/rootless_console"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minWidth="0dp"
+                            android:text="@string/rootless_open_console"
+                            android:textSize="12sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_attach"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_attach_adapter"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_detach"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_detach_adapter"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/drawer_vm_actions"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_scan"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_scan"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_target"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_target"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_handshake"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_handshake"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_mass_handshake"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_mass_handshake"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_pmkid"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_pmkid"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rootless_action_deauth"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/rootless_action_deauth"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/drawer_right_pane"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/right_pane_pinned"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/right_pane_none"
+                            android:textSize="11sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/right_pane_pin"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/right_pane_pin"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/right_pane_unpin"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minWidth="0dp"
+                                android:text="@string/right_pane_unpin"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/right_pane_return_tab_toggle"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minWidth="0dp"
+                            android:text="@string/right_pane_return_tab_toggle"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </ScrollView>
                 </LinearLayout>
+                </ScrollView>
+            </LinearLayout>
+
+            <!--
+              The right pane. A swipe right-to-left pulls this out fullscreen when no app has been
+              pinned to that swipe; once one has, the swipe opens that app instead. It is a real
+              DrawerLayout drawer, so only one of the two panes can be open at a time.
+            -->
+            <LinearLayout
+                android:id="@+id/right_pane"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="?attr/termuxActivityDrawerBackground"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:id="@+id/right_pane_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/right_pane_hint"
+                    android:textSize="12sp" />
+
+                <!--
+                  Everything the terminal opens as a URL lands in here, and stays in here. It is a
+                  sandboxed WebView rather than an external app: a tap on a link in the console must
+                  never be able to throw the user out of Termux into a browser.
+                -->
+                <LinearLayout
+                    android:id="@+id/right_pane_web_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/right_pane_web_url"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="middle"
+                        android:singleLine="true"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/right_pane_web_browser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/right_pane_web_browser_desc"
+                        android:padding="8dp"
+                        android:text="@string/right_pane_web_browser"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/right_pane_web_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/right_pane_web_close_desc"
+                        android:padding="8dp"
+                        android:text="@string/right_pane_web_close"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <WebView
+                    android:id="@+id/right_pane_web"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </com.termux.app.terminal.FullScreenDrawerLayout>
@@ -112,6 +523,53 @@
             android:layout_height="37.5dp"
             android:background="@color/black"
             android:layout_alignParentBottom="true" />
+
+        <!--
+          Settings and the soft-keyboard toggle sit at the bottom left, floating just above the
+          extra-keys row instead of competing with the status band across the top.
+        -->
+        <LinearLayout
+            android:id="@+id/bottom_left_controls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="6dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/controls_grip"
+                android:layout_width="22dp"
+                android:layout_height="34dp"
+                android:background="#66000000"
+                android:contentDescription="@string/controls_grip_desc"
+                android:gravity="center"
+                android:text="⋮"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/toggle_keyboard_button"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="4dp"
+                android:alpha="0.75"
+                android:background="#66000000"
+                android:contentDescription="@string/action_toggle_soft_keyboard_icon"
+                android:padding="6dp"
+                android:src="@drawable/ic_keyboard"
+                app:tint="@color/white" />
+
+            <ImageButton
+                android:id="@+id/settings_button"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="4dp"
+                android:alpha="0.75"
+                android:background="#66000000"
+                android:contentDescription="@string/action_open_settings"
+                android:padding="6dp"
+                android:src="@drawable/ic_settings"
+                app:tint="@color/white" />
+        </LinearLayout>
 
     </RelativeLayout>
 

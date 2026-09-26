@@ -76,7 +76,7 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     public static final String ACTION_DETACH_USB = "com.termux.service_detach_usb";
 
     /** This service is only bound from inside the same process and never uses IPC. */
-    class LocalBinder extends Binder {
+    public class LocalBinder extends Binder {
         public final TermuxService service = TermuxService.this;
         public UsbPassthroughManager getUsbPassthroughManager() {
             return service.mUsbPassthroughManager;

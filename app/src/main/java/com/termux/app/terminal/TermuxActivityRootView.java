@@ -290,10 +290,18 @@ public class TermuxActivityRootView extends LinearLayout implements ViewTreeObse
     public static class WindowInsetsListener implements View.OnApplyWindowInsetsListener {
         @Override
         public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-            mStatusBarHeight =  WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            recordStatusBarHeight(insets);
             // Let view window handle insets however it wants
             return v.onApplyWindowInsets(insets);
         }
+    }
+
+    /**
+     * Record the status bar height. The keyboard-margin logic below needs it, and it now also has to
+     * survive TermuxActivity replacing the insets listener to apply its own edge-to-edge padding.
+     */
+    public static void recordStatusBarHeight(WindowInsets insets) {
+        mStatusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(WindowInsetsCompat.Type.statusBars()).top;
     }
 
 }

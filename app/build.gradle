@@ -49,8 +49,8 @@ android {
     defaultConfig {
         minSdkVersion project.properties.minSdkVersion.toInteger()
         targetSdkVersion project.properties.targetSdkVersion.toInteger()
-        versionCode 118
-        versionName "0.118.0"
+        versionCode 119
+        versionName "0.119.0"
 
         if (appVersionName) versionName = appVersionName
         validateVersionName(versionName)
@@ -131,6 +131,13 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
+        }
+    }
+
+    sourceSets {
+        main {
+            // Receives the staged VM console bridge (see stageRootlessConsoleBridge at the bottom).
+            jniLibs.srcDirs += file("$buildDir/generated/rootlessConsoleLibs")
         }
     }
 
@@ -246,4 +253,52 @@ afterEvaluate {
     android.applicationVariants.all { variant ->
         variant.javaCompileProvider.get().dependsOn(downloadBootstraps)
     }
+}
+
+// ---------------------------------------------------------------------------------------------
+// The VM console bridge (cpp/rootless-console.c) is an EXECUTABLE - it needs a real entry point -
+// so ndk-build emits it as `rootless-console` with no extension, and Android only ships lib*.so out
+// of an APK. Stage it into a generated jniLibs directory under a .so name; that is what gets it
+// extracted into the app's native library directory at install time, from where the app copies it
+// into its own data dir and executes it.
+// ---------------------------------------------------------------------------------------------
+def stageRootlessConsoleBridge = tasks.register("stageRootlessConsoleBridge") {
+    def cxxRoot = file("$buildDir/intermediates/cxx")
+    def outRoot = file("$buildDir/generated/rootlessConsoleLibs")
+
+    inputs.dir(cxxRoot).withPropertyName("cxxOutput").optional()
+    outputs.dir(outRoot).withPropertyName("stagedBridge").optional()
+
+    doLast {
+        delete(outRoot)
+        ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"].each { abi ->
+            def built = fileTree(cxxRoot) {
+                include "**/obj/local/${abi}/rootless-console"
+            }.files.find { it.isFile() }
+            if (built != null) {
+                def abiDir = new File(outRoot, abi)
+                abiDir.mkdirs()
+                new File(abiDir, "librootless-console.so").bytes = built.bytes
+                logger.lifecycle("staged rootless-console bridge for ${abi} (${built.length()} bytes)")
+            }
+        }
+    }
+}
+
+// Must run after the native build, and before the native libs are merged into the APK. The staging
+// task reads intermediates/cxx (owned by the ndk-build configuration tasks), and Gradle requires
+// that producer relationship to be declared explicitly instead of being inferred.
+def stagingBridgeTask = stageRootlessConsoleBridge.get()
+tasks.matching { it.name.toLowerCase().contains("configurendkbuild") }.configureEach { configTask ->
+    stagingBridgeTask.dependsOn(configTask)
+}
+tasks.matching { it.name.toLowerCase().contains("externalnativebuild") }.configureEach { nativeTask ->
+    stagingBridgeTask.dependsOn(nativeTask)
+}
+// buildNdkBuild<variant>[<abi>] is what actually produces obj/local/<abi>/rootless-console.
+tasks.matching { it.name.toLowerCase().contains("buildndkbuild") }.configureEach { nativeTask ->
+    stagingBridgeTask.dependsOn(nativeTask)
+}
+tasks.matching { it.name.toLowerCase().contains("jnilibfolders") }.configureEach { mergeTask ->
+    mergeTask.dependsOn(stagingBridgeTask)
 }

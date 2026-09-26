@@ -253,6 +253,9 @@
     <string name="rootless_status_not_installed">VM not installed yet. Open the app once and let it install.</string>
     <string name="rootless_status_running">VM running  (pid %1$d)</string>
     <string name="rootless_status_stopped">VM stopped</string>
+    <string name="rootless_short_running">running</string>
+    <string name="rootless_short_stopped">stopped</string>
+    <string name="rootless_short_not_installed">not installed</string>
     <string name="rootless_status_no_socket">VM process is alive but its control socket is missing. Stop it, then start again.</string>
     <string name="rootless_start_vm">Start VM</string>
     <string name="rootless_stop_vm">Stop VM</string>
@@ -286,5 +289,105 @@
     <string name="rootless_key_down">\u2193</string>
     <string name="rootless_key_left">\u2190</string>
     <string name="rootless_key_right">\u2192</string>
+
+    <!-- Left drawer: sections. -->
+    <string name="drawer_section_sessions">Sessions</string>
+    <string name="drawer_section_vm">VM</string>
+    <string name="drawer_vm_controls">Controls</string>
+    <string name="drawer_vm_actions">Wireless actions</string>
+    <string name="drawer_section_expanded">Collapse section</string>
+    <string name="drawer_section_collapsed">Expand section</string>
+    <string name="action_toggle_soft_keyboard_icon">Toggle keyboard</string>
+
+    <!-- VM console (a real Termux session bridged to the guest serial line). -->
+    <string name="rootless_console_session_name">VM console</string>
+    <string name="rootless_console_bridge_missing">This build is missing the console bridge.</string>
+
+    <!-- Wireless quick actions. -->
+    <string name="rootless_action_scan">Scan APs</string>
+    <string name="rootless_action_deauth">Mass deauth</string>
+    <string name="rootless_action_handshake">Capture handshake</string>
+    <string name="rootless_action_mass_handshake">Mass handshake</string>
+    <string name="rootless_action_pmkid">PMKID scan</string>
+    <string name="rootless_action_target">Target</string>
+    <string name="rootless_action_needs_target">Set a target first (Target button).</string>
+    <string name="rootless_action_needs_vm">Start the VM first.</string>
+    <string name="rootless_target_title">Capture target</string>
+    <string name="rootless_target_ssid_hint">Network name / SSID (e.g. MyNetwork)</string>
+    <string name="rootless_target_bssid_hint">AP BSSID (aa:bb:cc:dd:ee:ff)</string>
+    <string name="rootless_target_channel_hint">Channel (e.g. 6)</string>
+    <string name="rootless_target_help">Scan APs first: the table it prints has SSID, BSSID and channel in that order, so copy them across. Deauth, handshake capture and the PMKID scan all use this target.</string>
+    <string name="rootless_target_saved">Target saved: %1$s on channel %2$d</string>
+    <string name="rootless_target_saved_ssid">Target saved: %1$s (%2$s) on channel %3$d</string>
+
+    <!-- Target picker: what is in range, weakest and busiest first. -->
+    <string name="rootless_scan_title">Networks in range</string>
+    <string name="rootless_scan_rescan">Scan again</string>
+    <string name="rootless_scan_manual">Enter manually</string>
+    <string name="rootless_scan_starting">Starting the sweep…</string>
+    <string name="rootless_scan_progress">Scanning · step %1$d of %2$d · %3$d in range so far</string>
+    <string name="rootless_scan_found">%1$d networks in range · least secure and busiest first</string>
+    <string name="rootless_scan_stalled">Sweep reported nothing (last step %1$d of %2$d) — is the VM running and the adapter attached?</string>
+    <string name="rootless_scan_no_adapter">No wireless adapter in the guest. Plug the dongle in and use ATTACH WI-FI ADAPTER in the drawer, then Scan again.</string>
+    <string name="rootless_scan_busy_cancelled">Cancelled — the other run still has the adapter.</string>
+    <string name="rootless_scan_needs_vm">Start the VM first: a sweep runs inside the guest.</string>
+    <string name="rootless_scan_detail">%1$s · %2$d clients · %3$s · ch %4$d · %5$d dBm</string>
+    <string name="rootless_scan_hidden_name">&lt;hidden SSID&gt;</string>
+    <string name="rootless_scan_selected">Target: %1$s</string>
+    <string name="rootless_scan_hint">Tap a network to make it the target for deauth, handshake capture and the PMKID scan. Sorted least secure first, then by most clients.</string>
+    <string name="rootless_filter_hidden">Hide hidden</string>
+    <string name="rootless_filter_wpa3">Hide WPA3</string>
+    <string name="rootless_filter_open">Hide open/WEP</string>
+    <string name="rootless_filter_clients">Only with clients</string>
+
+    <!-- Right pane: a swipe right-to-left either opens the pane or the app pinned to it. -->
+    <string name="drawer_right_pane">Right pane</string>
+    <string name="right_pane_none">Nothing pinned — a right-to-left swipe opens this blank pane.</string>
+    <string name="right_pane_pinned">%1$s opens on a right-to-left swipe.</string>
+    <string name="right_pane_pin">Pin an app</string>
+    <string name="right_pane_unpin">Clear</string>
+    <string name="right_pane_pin_title">Pin an app to the swipe</string>
+    <string name="right_pane_pin_failed">Could not open %1$s — unpinning it.</string>
+    <string name="right_pane_web_close_desc">Close the web pane</string>
+    <string name="right_pane_web_close">✕</string>
+    <string name="right_pane_web_browser_desc">Open in a browser app</string>
+    <string name="right_pane_web_browser">↗</string>
+    <string name="right_pane_web_no_app">No app can open that link.</string>
+    <string name="right_pane_hint">Right pane.\n\nPin an app here from the drawer (Right pane → Pin an app) and a right-to-left swipe opens it. With nothing pinned, the swipe opens this pane instead.</string>
+    <string name="right_pane_return_hint">%1$s opened. Swipe from the screen edge or press back to return to Termux.</string>
+    <!-- The always-on-top tab: the only place a swipe can be seen while another app is in front. -->
+    <string name="right_pane_return_tab">‹ Termux</string>
+    <string name="right_pane_return_tab_toggle">Return tab (swipe back from a pinned app)</string>
+    <string name="right_pane_return_tab_on">Return tab on — it appears over a pinned app; tap or swipe it right.</string>
+    <string name="right_pane_return_tab_off">Return tab off.</string>
+    <string name="right_pane_return_tab_denied">Termux needs the display-over-other-apps permission for the return tab. Grant it in the app settings.</string>
+
+    <!-- Actions on highlighted text. -->
+    <string name="action_send_to_terminal">Send to terminal</string>
+    <string name="action_send_to_terminal_done">On the command line — press enter to run it.</string>
+    <string name="action_ask_gemini">Ask Gemini</string>
+    <string name="action_ask_brave">Ask Brave</string>
+    <string name="action_search_brave">Search Brave</string>
+    <string name="action_ai_needs_session">No running session to answer in.</string>
+    <string name="controls_grip_desc">Drag to move, tap to collapse the keyboard and settings buttons</string>
+    <string name="action_ask_ai_no_target">Nothing to open an AI with — no browser answered, so the text is on the clipboard.</string>
+
+    <!-- What is running, what has been captured, and the one-adapter warning. -->
+    <string name="rootless_activity_idle">Adapter idle — nothing running</string>
+    <string name="rootless_activity_running">▶ %1$s · started %2$s</string>
+    <string name="rootless_activity_hashes">%1$d handshake hashes</string>
+    <string name="rootless_activity_pmkids">%1$d PMKID hashes</string>
+    <string name="rootless_activity_ssids">captured: %1$s</string>
+    <string name="rootless_busy_title">Something is already running</string>
+    <!-- The tail of the one-adapter warning, after the red "PMKID scan started 2 min ago". -->
+    <string name="rootless_busy_tail">is holding the adapter. Only one tool can use it at a time — a second run fights the first, and both end up seeing almost nothing.</string>
+    <string name="rootless_busy_message">%1$s started %2$s and is holding the adapter. Only one tool can use it at a time — a second run fights the first, and both end up seeing almost nothing.</string>
+    <string name="rootless_busy_stop">Stop it and run this</string>
+    <string name="rootless_busy_anyway">Run anyway</string>
+    <string name="rootless_watch_title">Watch live?</string>
+    <string name="rootless_watch_message">Show the live results in a floating Termux window (Termux:Float) so you can keep browsing?</string>
+    <string name="rootless_watch_yes">Watch live</string>
+    <string name="rootless_watch_no">Just run</string>
+    <string name="rootless_float_missing">Termux:Float is not installed, so the run stays in the VM console session.</string>
 
 </resources>

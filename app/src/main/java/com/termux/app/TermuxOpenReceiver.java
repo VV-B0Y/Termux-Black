@@ -57,6 +57,23 @@ public class TermuxOpenReceiver extends BroadcastReceiver {
 
         String scheme = data.getScheme();
         if (scheme != null && !UriScheme.SCHEME_FILE.equals(scheme)) {
+            // Web URLs stay inside Termux. The console and the web are isolated: a link that comes from
+            // a command - or from a stray tap on a link in the transcript - must not be able to take over
+            // the screen by handing itself to a browser. The pane has an explicit "open in browser"
+            // button for when leaving the app is genuinely what you want.
+            if (Intent.ACTION_VIEW.equals(intentAction)
+                && ("http".equals(scheme) || "https".equals(scheme))) {
+                Intent paneIntent = new Intent(context, TermuxActivity.class);
+                paneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                paneIntent.putExtra(TermuxActivity.EXTRA_OPEN_URL, data.toString());
+                try {
+                    context.startActivity(paneIntent);
+                } catch (Exception e) {
+                    Logger.logError(LOG_TAG, "Could not open url in the isolated pane: " + e);
+                }
+                return;
+            }
+
             Intent urlIntent = new Intent(intentAction, data);
             if (intentAction.equals(Intent.ACTION_SEND)) {
                 urlIntent.putExtra(Intent.EXTRA_TEXT, data.toString());

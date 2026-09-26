@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Target for the capture/deauth quick actions: the network's SSID, its BSSID and the channel.
+     The SSID is first because it is how the network is identified in the scan tables. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="8dp">
+
+    <EditText
+        android:id="@+id/target_ssid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/rootless_target_ssid_hint"
+        android:inputType="textNoSuggestions"
+        android:importantForAutofill="no"
+        android:textColor="#FFFFFFFF"
+        android:textColorHint="#FFB3B3B3" />
+
+    <EditText
+        android:id="@+id/target_bssid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/rootless_target_bssid_hint"
+        android:inputType="textNoSuggestions"
+        android:importantForAutofill="no"
+        android:textColor="#FFFFFFFF"
+        android:textColorHint="#FFB3B3B3" />
+
+    <EditText
+        android:id="@+id/target_channel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/rootless_target_channel_hint"
+        android:inputType="number"
+        android:importantForAutofill="no"
+        android:textColor="#FFFFFFFF"
+        android:textColorHint="#FFB3B3B3" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textSize="12sp"
+        android:text="@string/rootless_target_help" />
+</LinearLayout>

@@ -37,6 +37,40 @@ installs a Debian guest, boots it, and passes a USB Wi-Fi adapter straight throu
   attach/detach the adapter: all in-app. A user never needs a terminal.
 - **Hands-free, credential-free first run** — assets are fetched from the public releases of this
   repo over HTTPS. Nothing is bundled in the APK and no GitHub token is baked into it.
+- **Captures land in an organised tree** — every run writes into `/root/loot/<type>/<timestamp>/`,
+  never loose into the guest's home. See [Where captures go](#where-captures-go).
+- **The console and the web are isolated** — a URL opened from the terminal renders in a sandboxed
+  WebView in the app's own pane, not in an external browser. See [Console and web](#console-and-web).
+
+## Where captures go
+
+Everything the capture actions produce is written under one parent directory in the guest, one
+subtree per scan type, one timestamped directory per run:
+
+| path | contents |
+|---|---|
+| `/root/loot/airodump/<timestamp>/` | passive sweeps and channel tables (`scan-01.csv`, `pre-01.csv`, `*-tty.log`) |
+| `/root/loot/handshakes/<timestamp>/` | 4-way handshakes (`hs-01.cap`, `hs.hc22000`, `mhs-*`) |
+| `/root/loot/pmkid/<timestamp>/` | PMKID hunts (`pmkid.pcapng`, `pmkid.hc22000`) |
+| `/root/loot/deauth/<timestamp>/` | deauth runs (channel tables only, no capture files) |
+| `/root/loot/picker/<timestamp>/` | the target picker's sweep (`pick-01.csv`) |
+| `/root/loot/_legacy/` | anything found loose in `/root` when the tree was introduced |
+
+`<type>/latest` is a symlink to the newest run of that type, so a stable path always resolves to
+the most recent run. The tree itself is baked into the published image — a fresh install already
+has it, along with the driver tuning. Temporary work files (the SSID list extracted from a
+capture) go to `/tmp`, so nothing accumulates in the home directory.
+
+## Console and web
+
+The terminal and the web are kept apart on purpose. Tapping a link in the transcript, using the
+transcript's URL menu, or running something like `termux-open-url` all open the page in a
+sandboxed `WebView` inside the app's right pane:
+
+- the view has no file or content access, no mixed-content loads, no popups, and no JS-opened
+  windows, and any non-`http(s)` scheme is refused rather than handed to another app;
+- nothing in that path can take over the screen by launching a browser;
+- a deliberate `↗` button in the pane opens the current page in a real browser, and `✕` closes it.
 
 ## Install (end user)
 
@@ -70,7 +104,7 @@ Nothing else is required — no PC, no adb, no Termux scripting.
 
 | asset | size | role |
 |---|---|---|
-| `rootfs.imgz` | 1,051,932,051 | Debian trixie arm64 rootfs, gzip-compressed qcow2, driver-tuned |
+| `rootfs.imgz` | 678,345,321 | Debian trixie arm64 rootfs, gzip-compressed qcow2, driver-tuned |
 | `qemu-system-aarch64` | 43,800,304 | QEMU built with the NDK against Android's own linker |
 | `Image` | 37,660,608 | guest kernel `6.12.107+deb13-arm64` |
 | `initrd.img` | 36,485,420 | guest initrd |

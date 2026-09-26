@@ -383,8 +383,8 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
 
             TerminalSession newTerminalSession = newTermuxSession.getTerminalSession();
             setCurrentSession(newTerminalSession);
-
-            mActivity.getDrawer().closeDrawers();
+            // The drawer is left open on purpose: sessions can be created one after another without
+            // it collapsing, and it only closes when the user swipes it away.
         }
     }
 

@@ -147,14 +147,14 @@ iwconfig wlan0 channel 10
 iw dev wlan0 info | grep -E 'type|channel'     # confirm BEFORE capturing
 
 # 3. arm the capture (tcpdump gives the full radiotap record)
-tcpdump -i wlan0 -nn -e -w /root/cap.pcap &
+tcpdump -i wlan0 -nn -e -w /root/loot/airodump/diag/cap.pcap &
 
 # 4. let the client reconnect — no deauth needed; toggle Wi-Fi on a device you own
 
 # 5. count frame classes correctly, then validate with hcxpcapngtool
-tcpdump -r /root/cap.pcap -nn | grep -icE 'Data IV:|CF \+QoS|Data \('
-tcpdump -r /root/cap.pcap -nn | grep -ic eapol
-hcxpcapngtool -o /root/cap.hc22000 /root/cap.pcap     # M1..M4 counts + hash file
+tcpdump -r /root/loot/airodump/diag/cap.pcap -nn | grep -icE 'Data IV:|CF \+QoS|Data \('
+tcpdump -r /root/loot/airodump/diag/cap.pcap -nn | grep -ic eapol
+hcxpcapngtool -o /root/loot/airodump/diag/cap.hc22000 /root/loot/airodump/diag/cap.pcap     # M1..M4 counts + hash file
 ```
 
 Two more traps that cost time:
@@ -162,7 +162,7 @@ Two more traps that cost time:
 - **`airodump-ng` needs a controlling terminal on this setup.** Without a pty it writes a
   **0-byte capture** and ignores SIGINT (a plain `timeout -s INT` never ends it), which reads as
   a broken adapter. Run it as
-  `timeout -k 5 120 script -qec "airodump-ng -c 10 -w /root/cap wlan0" /root/ad.log`.
+  `timeout -k 5 120 script -qec "airodump-ng -c 10 -w /root/loot/airodump/diag/cap wlan0" /root/loot/airodump/diag/ad.log`.
 - **Sweep, do not assume 1/6/11.** A target sat on channel 10; APs must be enumerated by fixing
   each channel with `iwconfig` and reading the `CH` column out of the CSV. `iw dev wlan0 scan` is
   unusable here (aborts, and the guest's regulatory domain is `country 00` = passive scan only).
