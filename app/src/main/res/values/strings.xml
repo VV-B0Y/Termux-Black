@@ -237,7 +237,7 @@
 
     <!-- Rootless Wi-Fi VM first-run setup -->
     <string name="rootless_install_title">Install the Wi-Fi VM</string>
-    <string name="rootless_install_message">This phone has no VM engine yet. The app will download about 1.3 GB from GitHub, verify every file by checksum, and install it. Wi-Fi is recommended. This runs once.</string>
+    <string name="rootless_install_message">This phone has no VM engine yet. The app will download about 760 MB from GitHub, verify every file by checksum, and install it. Wi-Fi is recommended. This runs once.</string>
     <string name="rootless_install_confirm">Install</string>
     <string name="rootless_install_later">Not now</string>
     <string name="rootless_install_progress_title">Installing VM</string>

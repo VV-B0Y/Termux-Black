@@ -11,7 +11,7 @@ installs a Debian guest, boots it, and passes a USB Wi-Fi adapter straight throu
 │ unrooted Android phone                      │
 │                                             │
 │  Termux-Black APK (com.termux)              │
-│    ├── first run: downloads ~1.2 GB of VM   │
+│    ├── first run: downloads ~760 MB of VM  │
 │    │   assets, sha256-verified              │
 │    ├── installs + launches a QEMU guest     │
 │    │   under the app's own filesDir         │
@@ -74,9 +74,9 @@ sandboxed `WebView` inside the app's right pane:
 
 ## Install (end user)
 
-1. Install `Termux-Black.apk` (arm64-v8a build is attached to the
+1. Install `termux-black-arm64-v8a.apk` (the arm64-v8a build attached to the
    [release](https://github.com/VV-B0Y/Termux-Black/releases/tag/rootless-main)).
-2. Open it and tap **VM** in the drawer → **Start VM**. On first run it offers the ~1.2 GB asset
+2. Open it and tap **VM** in the drawer → **Start VM**. On first run it offers the ~760 MB asset
    download, verifies every file against the manifest sha256, unpacks the rootfs and boots.
 3. Plug the USB Wi-Fi adapter into the phone *after* the VM is up (the `USB_DEVICE_ATTACHED`
    intent auto-grants permission and attaches it). Open **Console** and run `iw dev`.
